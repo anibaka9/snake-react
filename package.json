@@ -10,6 +10,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.8",
+    "ramda": "^0.27.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
@@ -39,6 +40,7 @@
     ]
   },
   "devDependencies": {
+    "@types/ramda": "^0.27.63",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "@typescript-eslint/parser": "^4.13.0",
     "eslint-config-prettier": "^7.1.0",
