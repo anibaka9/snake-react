@@ -10,7 +10,7 @@ interface ControlsProps {
 const Controls = ({ gameState, startGame, score }: ControlsProps): JSX.Element => {
   return (
     <div className="controls">
-      {gameState !== 'ready' && <p className="text">srore: {score}</p>}
+      {gameState !== 'ready' && <p className="text">score: {score}</p>}
       {gameState === 'ready' && <button onClick={startGame}>Start game</button>}
       {gameState === 'loose' && (
         <>
