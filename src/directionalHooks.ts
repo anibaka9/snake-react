@@ -2,23 +2,22 @@ import { useEffect, useState } from 'react';
 import useGetPressedKey from './useGetPressedKey';
 import { Direction } from './types';
 
-export const usePressedGetDirection = (): Direction | null => {
-  const pressedKey = useGetPressedKey();
-  switch (pressedKey) {
-    case 'KeyW':
-      return '-y';
-    case 'KeyS':
-      return '+y';
-    case 'KeyA':
-      return '-x';
-    case 'KeyD':
-      return '+x';
-    default:
-      return null;
-  }
+const keys: { [key in Direction]: string[] } = {
+  '-y': ['KeyW', 'ArrowUp'],
+  '+y': ['KeyS', 'ArrowDown'],
+  '-x': ['KeyA', 'ArrowLeft'],
+  '+x': ['KeyD', 'ArrowRight'],
 };
 
-export const useGetLastDirection = (): Direction | null => {
+const directions: Direction[] = ['-y', '+y', '-x', '+x'];
+
+export const usePressedGetDirection = (): Direction | null => {
+  const pressedKey = useGetPressedKey();
+  if (!pressedKey) return null;
+  return directions.find((el) => keys[el].includes(pressedKey)) || null;
+};
+
+export const useGetLastDirection = (): [Direction | null, () => void] => {
   const pressedDirection = usePressedGetDirection();
   const [direction, setDirection] = useState<Direction | null>(null);
   useEffect(() => {
@@ -26,5 +25,8 @@ export const useGetLastDirection = (): Direction | null => {
       setDirection(pressedDirection);
     }
   }, [direction, pressedDirection]);
-  return direction;
+
+  const resetLastPressedDirection = () => setDirection(null);
+
+  return [direction, resetLastPressedDirection];
 };

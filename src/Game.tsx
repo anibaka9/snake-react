@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import * as R from 'ramda';
 import './App.css';
 import Field from './Field';
-import { Snake, Direction, Coodinates } from './types';
+import { Snake, Direction, GameStates, Coodinates } from './types';
 import { useGetLastDirection } from './directionalHooks';
 import useRenderCurcle from './useRenderCurcle';
+import Controls from './Controls';
+import checkIfFieldInArray from './checkIfFieldInArray';
 
 const gameSettins: {
   fieldWidth: number;
@@ -11,17 +14,19 @@ const gameSettins: {
   initialSnake: Snake;
   initialSpeed: number;
   initialDirection: Direction;
+  maxSpeed: number;
+  speedIncrement: number;
 } = {
-  fieldWidth: 10,
-  fieldHeight: 10,
+  fieldWidth: 15,
+  fieldHeight: 15,
   initialSnake: [
-    { x: 3, y: 0 },
-    { x: 2, y: 0 },
     { x: 1, y: 0 },
     { x: 0, y: 0 },
   ],
   initialSpeed: 4,
   initialDirection: '+x',
+  maxSpeed: 15,
+  speedIncrement: 0.25,
 };
 
 const getOffcetFromDirection = (direction: Direction | null): Coodinates => {
@@ -47,12 +52,68 @@ const getCorrectDirection = (
   return direction;
 };
 
-const App: React.FC = () => {
-  const [snake, setSnake] = useState<Snake>(gameSettins.initialSnake);
-  const [direction, setDirection] = useState<Direction>(gameSettins.initialDirection);
-  const lastPressedDirection = useGetLastDirection();
+const checkColisions = (
+  newHead: Coodinates,
+  snake: Snake,
+  fieldWidth: number,
+  fieldHeight: number,
+): boolean =>
+  !(
+    newHead.x >= fieldWidth ||
+    newHead.x < 0 ||
+    newHead.y >= fieldHeight ||
+    newHead.y < 0 ||
+    checkIfFieldInArray(newHead, snake)
+  );
 
-  const renderNow = useRenderCurcle({ fps: gameSettins.initialSpeed, on: true });
+const generateFood = (snake: Snake, fieldWidth: number, fieldHeight: number): Coodinates => {
+  const numberOfFiels = fieldWidth * fieldHeight;
+  const getRandomNumber = (a: number, b: number): number => {
+    const min = a > b ? b : a;
+    const max = a > b ? a : b;
+    return Math.floor(Math.random() * (max - min) + min);
+  };
+
+  const numberOfEmptyFields = numberOfFiels - snake.length;
+
+  const snakeFields: number[] = snake.map((el) => el.x + el.y * fieldHeight);
+
+  const emptyFields = R.range(0, numberOfFiels).filter((el) => !snakeFields.includes(el));
+
+  const randomNumberIndex = getRandomNumber(0, numberOfEmptyFields);
+
+  const randomNumber = emptyFields[randomNumberIndex];
+
+  return {
+    x: randomNumber % fieldHeight,
+    y: (randomNumber - (randomNumber % fieldWidth)) / fieldWidth,
+  };
+};
+
+const App: React.FC = () => {
+  const [snake, setSnake] = useState<Snake>([]);
+  const [direction, setDirection] = useState<Direction>(gameSettins.initialDirection);
+  const [lastPressedDirection, resetLastPressedDirection] = useGetLastDirection();
+  const [gameState, setGameState] = useState<GameStates>('ready');
+  const [food, setFood] = useState<Coodinates | null>(null);
+  const [speed, setSpeed] = useState(gameSettins.initialSpeed);
+
+  useEffect(() => {
+    if (gameState === 'running') {
+      const { fieldWidth, fieldHeight } = gameSettins;
+      setFood(generateFood(snake, fieldWidth, fieldHeight));
+    }
+  }, [gameState, setFood]);
+
+  const renderNow = useRenderCurcle({ fps: speed, on: gameState === 'running' });
+
+  const startGame = () => {
+    resetLastPressedDirection();
+    setSnake(gameSettins.initialSnake);
+    setDirection(gameSettins.initialDirection);
+    setSpeed(gameSettins.initialSpeed);
+    setGameState('running');
+  };
 
   useEffect(() => {
     if (renderNow) {
@@ -64,18 +125,47 @@ const App: React.FC = () => {
 
       setDirection(newDirection);
 
+      resetLastPressedDirection();
+
       const newHead: Coodinates = { x: currentHead.x + offcet.x, y: currentHead.y + offcet.y };
-      const newSnake: Snake = [newHead, ...snake.slice(0, -1)];
-      setSnake(newSnake);
+      const noColisions = checkColisions(
+        newHead,
+        snake,
+        gameSettins.fieldWidth,
+        gameSettins.fieldHeight,
+      );
+
+      if (noColisions) {
+        const foodEated = food && newHead.x === food.x && newHead.y === food.y;
+
+        const newSnake: Snake = [newHead, ...(foodEated ? snake : snake.slice(0, -1))];
+        if (foodEated) {
+          if (speed < gameSettins.maxSpeed) setSpeed(speed + gameSettins.speedIncrement);
+
+          setFood(generateFood(newSnake, gameSettins.fieldWidth, gameSettins.fieldHeight));
+        }
+
+        setSnake(newSnake);
+      } else {
+        setGameState('loose');
+      }
     }
   }, [renderNow, snake, setSnake, direction, setDirection, lastPressedDirection]);
 
   return (
-    <Field
-      fieldWidth={gameSettins.fieldWidth}
-      fieldHeight={gameSettins.fieldHeight}
-      snake={snake}
-    />
+    <div>
+      <Controls
+        gameState={gameState}
+        startGame={startGame}
+        score={snake.length - gameSettins.initialSnake.length}
+      />
+      <Field
+        fieldWidth={gameSettins.fieldWidth}
+        fieldHeight={gameSettins.fieldHeight}
+        snake={snake}
+        food={food}
+      />
+    </div>
   );
 };
 

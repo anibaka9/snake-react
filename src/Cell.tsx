@@ -1,11 +1,11 @@
 import React from 'react';
 
 interface CellProp extends JSX.IntrinsicAttributes {
-  isSnake: boolean;
+  type: 'snake' | 'food' | 'empty';
 }
 
-const Cell = ({ isSnake }: CellProp): JSX.Element => {
-  return <div className={`field ${isSnake ? 'snake' : ''}`} />;
+const Cell = ({ type }: CellProp): JSX.Element => {
+  return <div className={`field ${type}`} />;
 };
 
 export default Cell;

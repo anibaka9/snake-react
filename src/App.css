@@ -11,18 +11,30 @@
   justify-content: center;
 }
 
+.controls {
+  height: 100px;
+}
+
+.text {
+  margin-top: 0px;
+}
+
 .wrapper {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-gap: 3px;
+  grid-template-columns: repeat(15, 1fr);
+  grid-gap: 2px;
 }
 
 .field {
-  height: 30px;
-  width: 30px;
+  height: 24px;
+  width: 24px;
   background-color: rgb(236, 211, 179);
 }
 
 .snake {
   background-color: black;
+}
+
+.food {
+  background-color: red;
 }
