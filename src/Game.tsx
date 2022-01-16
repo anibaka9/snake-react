@@ -117,7 +117,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (renderNow) {
-      const currentHead = snake[0];
+      const currentHead = R.head(snake);
 
       const newDirection = getCorrectDirection(direction, lastPressedDirection);
 
