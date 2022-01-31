@@ -2,6 +2,9 @@
   text-align: center;
 }
 
+.swipe-container {
+  overscroll-behavior: none;
+}
 
 .App-header {
   min-height: 100vh;
@@ -11,10 +14,8 @@
   justify-content: center;
 }
 
-
-
 .controls {
-  height: 100px;
+  height: 140px;
 }
 
 .select-filed-size-wrapper {

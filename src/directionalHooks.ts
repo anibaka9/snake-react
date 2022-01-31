@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import useGetPressedKey from './useGetPressedKey';
+import useGetSwipedDirection from './SwipeControls/useGetSwipedDirection';
 import { Direction } from './types';
 
 const keys: { [key in Direction]: string[] } = {
@@ -13,8 +14,10 @@ const directions: Direction[] = ['-y', '+y', '-x', '+x'];
 
 export const usePressedGetDirection = (): Direction | null => {
   const pressedKey = useGetPressedKey();
-  if (!pressedKey) return null;
-  return directions.find((el) => keys[el].includes(pressedKey)) || null;
+  const pressedDirection =
+    (pressedKey && directions.find((el) => keys[el].includes(pressedKey))) || null;
+  const swipedDirection = useGetSwipedDirection();
+  return pressedDirection || swipedDirection || null;
 };
 
 export const useGetLastDirection = (): [Direction | null, () => void] => {
