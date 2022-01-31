@@ -11,8 +11,22 @@
   justify-content: center;
 }
 
+
+
 .controls {
   height: 100px;
+}
+
+.select-filed-size-wrapper {
+  display: flex;
+  width: 100%;
+  padding-top: 4px;
+  justify-content: center;
+}
+
+.size-button {
+  margin-right: 4px;
+  margin-left: 4px;
 }
 
 .text {
@@ -21,14 +35,20 @@
 
 .wrapper {
   display: grid;
-  grid-template-columns: repeat(15, 1fr);
   grid-gap: 2px;
+  width: 90vw;
 }
 
 .field {
-  height: 24px;
-  width: 24px;
   background-color: rgb(236, 211, 179);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.field::before {
+  content: '';
+  display: block;
+  padding-top: 100%;
 }
 
 .snake {

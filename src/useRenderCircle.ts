@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const useRenderCurcle = ({ fps, on }: { fps: number; on: boolean }): boolean => {
+const useRenderCircle = ({ fps, on }: { fps: number; on: boolean }): boolean => {
   const [renderNow, setRenderNow] = useState<boolean>(false);
 
   useEffect(() => {
@@ -24,4 +24,4 @@ const useRenderCurcle = ({ fps, on }: { fps: number; on: boolean }): boolean => 
   return renderNow && on;
 };
 
-export default useRenderCurcle;
+export default useRenderCircle;

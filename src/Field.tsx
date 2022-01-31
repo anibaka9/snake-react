@@ -1,19 +1,22 @@
 import React from 'react';
 import * as R from 'ramda';
 import Cell from './Cell';
-import { Snake, Coodinates } from './types';
+import { Snake, Coordinates } from './types';
 import checkIfFieldInArray from './checkIfFieldInArray';
 
 interface FieldProp {
   fieldWidth: number;
   fieldHeight: number;
   snake: Snake;
-  food: Coodinates | null;
+  food: Coordinates | null;
 }
 
 const Field = ({ fieldWidth, fieldHeight, snake, food }: FieldProp): JSX.Element => {
   return (
-    <div className="wrapper">
+    <div
+      className="wrapper"
+      style={{ gridTemplateColumns: `repeat(${fieldWidth}, 1fr)`, maxWidth: fieldWidth * 30 }}
+    >
       {R.range(0, fieldWidth * fieldHeight).map((index) => {
         const y = (index - (index % fieldWidth)) / fieldWidth;
         const x = index % fieldHeight;
