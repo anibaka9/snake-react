@@ -20,8 +20,6 @@ const SwipeProvider: React.FC = ({ children }) => {
     onSwiped: () => setDirection(null),
   });
 
-  console.log('direction', direction);
-
   return (
     <SwipeContext.Provider value={direction}>
       <div className="swipe-container" {...handlers}>
